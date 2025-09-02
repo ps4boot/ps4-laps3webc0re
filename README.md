@@ -1,4 +1,4 @@
-Python WebHost for PS4 Linux with OKage Lapsc0re 
+Python WebHost for PS4  with OKage Lapsc0re 
 
 progress / flask for python is needed
 

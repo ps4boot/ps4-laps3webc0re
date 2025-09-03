@@ -6,8 +6,8 @@ app = Flask(__name__)
 
 FILES = {
     "GoldHEN": "./ELFs/laps3c0re-PS4-11-00.elf",
-    "Linux": "./ELFs/payload-PS4-11-00.elf",
-    "HEN": "./third_file.elf"
+    "Linux": "./ELFs/laps3c0re-PS4-11-00-linux.elf",
+    "HEN": "./ELFs/laps3c0re-PS4-11-00-hen.elf"
 }
 
 HTML_PAGE = """
@@ -65,7 +65,7 @@ def send_file():
     if filename:
         subprocess.Popen([
             "python", "./mast1c0re-send-file.py",
-            "-i", "192.168.1.23",
+            "-i", "192.168.1.50",
             "-p", "9045",
             "-f", filename
         ])

@@ -8,7 +8,11 @@ python server.py
 preview 
 
 
-https://github.com/user-attachments/assets/1d39750b-41c4-4450-abf4-cf7ed7185e44
+
+https://github.com/user-attachments/assets/38853e74-7f5f-4329-9992-4f3f284ba606
+
+
+
 
 
 

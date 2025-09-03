@@ -1,76 +1,53 @@
-# send_multi_redirect.py
-from flask import Flask, render_template_string, request, redirect, url_for
-import subprocess
+#!/usr/bin/env python3
+import argparse
+import socket
+import struct
+import os
+import time
+from progress.bar import Bar
 
-app = Flask(__name__)
+MAGIC = 0x0000EA6E
+CHUNK_SIZE = 4096
+RETRY_INTERVAL = 5  # Sekunden zwischen den Versuchen
 
-FILES = {
-    "GoldHEN": "./ELFs/laps3c0re-PS4-11-00.elf",
-    "Linux": "./another_file.elf",
-    "HEN": "./third_file.elf"
-}
+def send_file(ip, port, file_path):
+    try:
+        stats = os.stat(file_path)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((ip, port))
 
-HTML_PAGE = """
-<!DOCTYPE html>
-<html>
-<head>
-<title>PS4 OKAge ELF Sender</title>
-<style>
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin-top: 50px;
-}
-button {
-    font-size: 18px;
-    padding: 20px 40px;
-    margin: 10px;
-    cursor: pointer;
-    border-radius: 8px;
-    border: 1px solid #333;
-    background-color: #4CAF50;
-    color: white;
-    transition: background-color 0.3s;
-}
-button:hover {
-    background-color: #45a049;
-}
-#status {
-    margin-top: 20px;
-    font-weight: bold;
-    font-size: 16px;
-}
-</style>
-</head>
-<body>
-<h1>PS4 OKAge ELF Sender</h1>
-{% for name in files %}
-    <form action="/send" method="post" style="display:inline-block;">
-        <input type="hidden" name="filename" value="{{ files[name] }}">
-        <button type="submit">{{ name }}</button>
-    </form>
-{% endfor %}
-<p id="status">{{ status }}</p>
-</body>
-</html>
-"""
+        # Send magic
+        sock.sendall(struct.pack('<I', MAGIC))
+        # Send filesize
+        sock.sendall(struct.pack('<Q', stats.st_size))
 
-@app.route("/", methods=["GET"])
-def index():
-    return render_template_string(HTML_PAGE, files=FILES, status="")
+        # Send file
+        bar = Bar('Uploading', max=stats.st_size)
+        with open(file_path, 'rb') as file:
+            while True:
+                data = file.read(CHUNK_SIZE)
+                if not data:
+                    break
+                sock.sendall(data)
+                bar.next(len(data))
+        bar.finish()
+        sock.close()
+        print("Datei erfolgreich gesendet.")
 
-@app.route("/send", methods=["POST"])
-def send_file():
-    filename = request.form.get("filename")
-    if filename:
-        subprocess.Popen([
-            "python", "./mast1c0re-send-file.py",
-            "-i", "192.168.1.23",
-            "-p", "9045",
-            "-f", filename
-        ])
-    # Nach dem Klick direkt auf die Startseite zurückleiten
-    return redirect(url_for('index'))
+    except ConnectionRefusedError:
+        print(f"Port {port} nicht erreichbar. Warte {RETRY_INTERVAL} Sekunden...")
+    except Exception as e:
+        print(f"Fehler beim Senden: {e}")
+
+def main(args):
+    file_abs_path = os.path.abspath(args.file)
+    while True:
+        send_file(args.ip, args.port, file_abs_path)
+        time.sleep(RETRY_INTERVAL)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    parser = argparse.ArgumentParser(description='Send a file over TCP.')
+    parser.add_argument('-i', '--ip', required=True, help='The target IP address.')
+    parser.add_argument('-p', '--port', type=int, default=9045, help='The target port number.')
+    parser.add_argument('-f', '--file', required=True, help='The file to send.')
+    main(parser.parse_args())

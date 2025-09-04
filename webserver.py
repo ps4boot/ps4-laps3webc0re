@@ -16,40 +16,100 @@ HTML_PAGE = """
 <head>
 <title>PS4 OKAge ELF Sender</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin-top: 50px;
-}
-button {
-    font-size: 18px;
-    padding: 20px 40px;
-    margin: 10px;
-    cursor: pointer;
-    border-radius: 8px;
-    border: 1px solid #333;
-    background-color: #4CAF50;
-    color: white;
-    transition: background-color 0.3s;
-}
-button:hover {
-    background-color: #45a049;
-}
-#status {
-    margin-top: 20px;
-    font-weight: bold;
-    font-size: 16px;
-}
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: url('/static/bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+        color: white;
+        text-shadow: 0 0 8px rgba(0,0,0,0.7);
+    }
+    h1 {
+        margin-bottom: 60px;
+        font-size: 3.5em;
+        letter-spacing: 2px;
+    }
+    .button-container {
+        display: flex;
+        gap: 60px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    form {
+        display: inline-block;
+    }
+    .icon-button {
+        width: 210px;   /* doppelte Größe */
+        height: 210px;  /* doppelte Größe */
+        border: none;
+        border-radius: 25px;
+        background: rgba(0,0,255,0.15);
+        backdrop-filter: blur(8px);
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+        padding: 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .icon-button img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 25px;
+    }
+    .icon-button:hover {
+        transform: scale(1.1) rotate(-2deg);
+        box-shadow: 0 0 35px rgba(0,0,0,0.9);
+    }
+    .label {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: yellow;
+        font-size: 1.4em;
+        text-shadow: 0 0 6px black;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-weight: bold;
+    }
+    .icon-button:hover .label {
+        opacity: 1;
+    }
+    #status {
+        margin-top: 40px;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
 <h1>PS4 OKAge ELF Sender</h1>
-{% for name in files %}
-    <form action="/send" method="post" style="display:inline-block;">
-        <input type="hidden" name="filename" value="{{ files[name] }}">
-        <button type="submit">{{ name }}</button>
-    </form>
-{% endfor %}
+<div class="button-container">
+    {% for name in files %}
+        <form action="/send" method="post">
+            <input type="hidden" name="filename" value="{{ files[name] }}">
+            <button type="submit" class="icon-button">
+                {% if name == "GoldHEN" %}
+                    <img src="/static/goldhen.png" alt="GoldHEN">
+                {% elif name == "HEN" %}
+                    <img src="/static/hen.png" alt="HEN">
+                {% elif name == "Linux" %}
+                    <img src="/static/linux.png" alt="Linux">
+                {% else %}
+                    <img src="https://via.placeholder.com/300?text={{ name }}" alt="{{ name }}">
+                {% endif %}
+                <div class="label">{{ name }}</div>
+            </button>
+        </form>
+    {% endfor %}
+</div>
 <p id="status">{{ status }}</p>
 </body>
 </html>

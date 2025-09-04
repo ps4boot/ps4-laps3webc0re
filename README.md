@@ -35,11 +35,12 @@ python server.py -i PS4IP -p 9045 -f ./ELFs/laps3c0re-PS4-11-00-***.elf
 
 Preview
 
-<img width="1235" height="604" alt="a" src="https://github.com/user-attachments/assets/2fe65eb3-81c2-4ba1-9e21-860fa80520bb" />
+https://github.com/user-attachments/assets/0b57738d-0bdf-48f4-88e5-fc0655ae4984
 
 
 
-Important: 
+
+requirement: 
 progress / flask for python is needed !!
 
 

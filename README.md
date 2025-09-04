@@ -22,8 +22,8 @@ python server.py -i PS4IP -p 9045 -f ./ELFs/laps3c0re-PS4-11-00-***.elf
 
 ## Payload Locations
 
-| Payload   | Internal Path                          | USB Path (first copy payload to USB) |
-|-----------|----------------------------------------|---------------------------------------|
+| Payload   | Internal Path                            | USB Path (first use copy the payload to USB) |
+|-------------|----------------------------------------|--------------------------------------|
 | **GoldHEN** | `/data/GoldHEN/payloads/payload.bin`   | `goldhen.bin`                        |
 | **Linux**   | `/data/linux/payload.bin`              | `payload.bin`                        |
 | **HEN**     | `/data/hen/payload.bin`                | `payload.bin`                        |
